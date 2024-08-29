@@ -44,14 +44,35 @@ private:
     Node *head {};
     Node *tail {};
     int length = 0;
+
+    vector<Node*> debug_data;	// add/remove nodes you use
+
+    // void DebugAddNode(Node* node) {
+    //         debug_data.push_back(node);
+    //     }
+
+    void DebugRemoveNode(Node* node) {
+            auto it = std::find(debug_data.begin(), debug_data.end(), node);
+            if (it == debug_data.end())
+                cout << "Node does not exist\n";
+            else
+                debug_data.erase(it);
+        }
 public:
     LinkedList() : head(nullptr), tail(nullptr), length(0) {}
-    ~LinkedList() {             // O(n) time O(1) memory
-            while (head) {
-                Node* current = head->next;
-                delete head;
-                head = current;
-            }
+    ~LinkedList() {
+        while (head) {
+            Node* current = head;
+            head = head->next;
+            delete current;
+        }
+        tail = nullptr;
+        length = 0;
+    }
+    void DeleteNode(Node* node) {
+            DebugRemoveNode(node);
+            --length;
+            delete node;
         }
     void print (){              // O(n) time O(1) memory
         Node* tempHead = head; // Don't change the head itself. You will lose it.
@@ -375,36 +396,174 @@ public:
         }
     }
 
-    void OddPosEvenPoss(){      //O(n) time O(1) memory
-        if (length <= 2)
+    void OddPosEvenPoss() {  // O(n) time, O(1) space
+    if (length <= 2) 
+        return;
+    Node *FirstEven = head->next;  
+    Node *CurrentOdd = head;
+    Node *CurrentEven = head->next;
+    while (CurrentEven && CurrentEven->next) {
+        CurrentOdd->next = CurrentEven->next;
+        CurrentOdd = CurrentOdd->next;
+        CurrentEven->next = CurrentOdd->next;
+        CurrentEven = CurrentEven->next;
+        }
+    CurrentOdd->next = FirstEven;
+    if (length % 2 == 0) {
+        tail = CurrentEven;
+        }
+    else {
+        tail = CurrentOdd;
+        }
+}
+
+    void InsertAfter (Node *src, Node* target) {
+        target->next = src->next;
+        src->next = target;
+        length++;
+    }
+
+    void InsertALternate(LinkedList &AnotherList) { // Incomplete function + Exception when destrcution 
+        if (!AnotherList.length) {
             return;
-        Node *FirstEven = head->next;   //We will need that so we connect the last odd node with the first even node
-        Node *CurrentOdd = head;
-        while (CurrentOdd->next && FirstEven->next->next){
-            Node *NextEven = CurrentOdd->next;
-            CurrentOdd->next = CurrentOdd->next->next;
-            NextEven->next = NextEven->next->next;
-            CurrentOdd = CurrentOdd->next;
-            if (length % 2 == 1){
-                tail = NextEven;
+        }
+        if (!length) {
+            head = AnotherList.head;
+            tail = AnotherList.tail;
+            length = AnotherList.length;
+        }else{
+            Node* current2 = AnotherList.head;
+            for (Node* current1 = head; current1 && current2;) {
+                Node* current2NextTemp = current2->next;
+                InsertAfter(current1,current2);
+                AnotherList.length--;
+                current2 = current2NextTemp;
+                if (current1 == tail){
+                    tail = AnotherList.tail;
+                    current1->next->next = current2;
+                    length+=AnotherList.length;
+                    break;
+                }
+                current1 = current1->next->next;
             }
-            CurrentOdd->next = FirstEven;
         }
     }
 
+    void AddNum (LinkedList &AnotherList) {
+        if (length == 0 && length == 0){
+            return;
+        }
+        if (head->data == 0 && AnotherList.head->data == 0){
+            return;
+        }
+        int a = length, b = AnotherList.length;
+        int DifferenceInLength = abs(a - b);
+        if(length > AnotherList.length){
+            while (DifferenceInLength-- ){
+                AnotherList.InsertFront(0);
+            }
+        }else if(AnotherList.length > length) {
+            while (DifferenceInLength-- ){
+                InsertFront(0);
+            }
+        }
+        Reverse();
+        AnotherList.Reverse();
+        int carry = 0;
+        Node *Current = head;
+        Node *AnotherCurrent = AnotherList.head;
+        while (Current && AnotherCurrent){
+            int SelfValue = Current->data;
+            int AnotherValue = AnotherCurrent->data;
+            int added = SelfValue + AnotherValue + carry;
+            if(added >= 10){
+                Current->data = (added % 10);
+                carry = 1;
+            }else{
+                Current->data = (added);
+                carry = 0;
+            }
+            Current = Current->next;
+            AnotherCurrent = AnotherCurrent->next;
+        }
+        Reverse();
+        if (carry == 1){
+            InsertFront(1);
+        }
+        AnotherList.Reverse();
+    }
+
+    Node* MoveAndDelete(Node* node) {
+        Node* temp = node->next;
+        DeleteNode(node);
+        return temp;
+    }
+
+    void RemoveReapetedValues() {
+        if (length <= 1) {
+            return;
+        }
+        InsertFront(-123546);
+        tail = head;
+        Node* previous = head;
+        Node* current = head->next;
+        while (current) {
+            bool AnyRemoved = false;
+            while (current && current->data == current->next->data) { // Segmentaion fault if the last element won't be deleted(No repetition)
+                int BlockValue = current->data;
+                AnyRemoved = true;
+                while (current && current->data == BlockValue)
+                    current = MoveAndDelete(current);
+            }
+            if (AnyRemoved) {
+                if (!current)
+                    tail = previous;
+                previous->next = current;
+                previous = current;
+            }else{
+                tail = current;
+                previous = current;
+                current = current->next;
+            }
+        }
+        previous = head->next;
+        DeleteHead();
+        head = previous;
+        if (!head)
+            tail = head;
+    }
+
+    pair<Node*, pair<Node*, Node*>> ReverseSubChain(Node* CurHead, int k) {
+        Node* CurTail = CurHead;
+        Node* Prev = CurHead;
+        CurHead = CurHead->next;
+        for (int s = 0; s < k-1 && CurHead; s++) {
+            Node* next = CurHead->next;
+            CurHead->next = Prev;
+            Prev = CurHead;
+            CurHead = next;
+        }
+        return make_pair(Prev, make_pair(CurTail, CurHead));
+    }
+    void ReverseChains(int k) {  //Only God knows what happened here 
+        if(length <= 1 || k == 1)
+            return;
+        Node* LastTail = nullptr;
+        Node* nextChainHead = head;
+        head = nullptr;
+        while(nextChainHead) {
+            pair<Node*, pair<Node*, Node*>> p = ReverseSubChain(nextChainHead, k);
+            Node* chainHead = p.first;
+            Node* chainTail = p.second.first;
+            nextChainHead = p.second.second;
+            tail = chainTail;
+
+            if(!head)
+                head = chainHead;
+            else
+                LastTail->next = chainHead;
+            LastTail = chainTail;
+        }
+        tail->next = nullptr;
+    }
 };
-
-int main (){
-    LinkedList list1;
-    // list1.InsertEnd(6);
-    // list1.InsertEnd(5);
-    // list1.InsertEnd(5);
-    // list1.InsertEnd(4);
-    // list1.InsertEnd(4);
-    // list1.InsertEnd(9);
-    // list1.InsertEnd(4);
-    list1.print();
-    list1.OddPosEvenPoss();
-    list1.print();
-}
-
