@@ -53,7 +53,7 @@ public:
 		line += ' ';
 		Stack stk(line.size());
 		for (int i = 0; i < (int)line.size(); ++i) {
-			if (line[i] == ' ') {	// get content (now reversed)
+			if (line[i] == ' ') {
 				while (!stk.isEmpty())
 					result += stk.pop();
 				result += ' ';
@@ -63,8 +63,27 @@ public:
 		return result;
     }
 
+	int reverse_num(int num) {
+		if (num == 0) {
+			return 0;
+		}
+		
+		string string_num = to_string(num);
+		Stack s(string_num.size());
+		while (num) {
+			s.push(num % 10);
+			num /= 10;
+		}
+		int tens = 1;
+		while (!s.isEmpty()) {
+			num = s.pop() * tens + num;
+			tens *= 10;
+		}
+		return num;
+	}
+
 int main() {
-	string str = "yM eman si demhA";
-	cout << reverse_subwords(str);
+	int x = 9876;
+	cout << reverse_num(x);
 	return 0;
 }
