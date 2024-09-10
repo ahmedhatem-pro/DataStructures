@@ -104,8 +104,30 @@ public:
 		return stck.isEmpty();
 	}
 
+	string remove_duplicates(string S) {
+		Stack stck(S.size() - 1);
+		string result;
+		for (char x : S) {
+			if (stck.isEmpty() || stck.peek() != x) {
+				stck.push(x);
+			}
+			else if (stck.peek() == x)
+				stck.pop();
+		}
+		
+		Stack reversedStack(S.size());
+		while (!stck.isEmpty()) {
+			reversedStack.push(stck.pop());
+		}
+		while (!reversedStack.isEmpty()) {
+			result += reversedStack.pop();
+		}
+
+		return result;
+	}
+
 int main() {
-	string str = "()(";
-	cout << is_valid(str);
+	string str = "abbdccdc"; //a
+	cout << remove_duplicates(str);
 	return 0;
 }
