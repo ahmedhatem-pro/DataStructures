@@ -82,8 +82,30 @@ public:
 		return num;
 	}
 
+	bool is_valid(string str) { // valid parentheses
+		Stack stck(str.size());
+		for (char x : str) {
+			if (x == ',' || x == ' ')
+				continue;
+			if (x == '(' || x == '{' || x == '[')
+				stck.push(x);
+			else if (stck.isEmpty())
+				return false;
+			else if (x == ')' && stck.peek() == '(')
+				stck.pop();
+			else if (x == ']' && stck.peek() == '[')
+				stck.pop();
+			else if (x == '}' && stck.peek() == '{')
+				stck.pop();
+			
+			else
+				return false;
+		}
+		return stck.isEmpty();
+	}
+
 int main() {
-	int x = 9876;
-	cout << reverse_num(x);
+	string str = "()(";
+	cout << is_valid(str);
 	return 0;
 }
