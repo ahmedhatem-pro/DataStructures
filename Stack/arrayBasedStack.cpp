@@ -53,7 +53,15 @@ public:
 		cout << "\n";
 	}
 
-	
+	void insert_at_bottom(int x) {
+		if (isEmpty())
+			push(x);
+		else{
+		int cur = pop();
+		insert_at_bottom(x);
+		push(cur);
+		}
+	}
 };
 	string reverse_subwords(string line) {
 		string result;
@@ -156,7 +164,12 @@ public:
 	}
 
 int main() {
-	
-
+	Stack stck (10);
+	stck.push(4);
+	stck.push(3);
+	stck.push(2);
+	stck.push(1);
+	stck.insert_at_bottom(10);
+	stck.display();
 	return 0;
 }
