@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <cassert>
+#include <cmath>
 using namespace std;
 
 class Stack {
@@ -46,6 +47,13 @@ public:
 		cout << "\n";
 	}
 
+	void display_reversed() {
+		for (int i = 0; i <= top; i++)
+			cout << array[i] << " ";
+		cout << "\n";
+	}
+
+	
 };
 	string reverse_subwords(string line) {
 		string result;
@@ -126,8 +134,29 @@ public:
 		return result;
 	}
 
+	void asteroidCollision(int arr[], int len) {
+		Stack result(len);
+
+		for (int i = 0; i < len; ++i) {
+		int asteroid = arr[i];
+			bool is_exploded = false;
+			while (!result.isEmpty() && asteroid < 0 && 0 <= result.peek()) {
+				if (result.peek() < -asteroid) {
+					result.pop();
+					continue;	// See if more explode
+				} else if (result.peek() == -asteroid)	// both exploded
+					result.pop();
+				is_exploded = true;
+				break;
+			}
+			if (!is_exploded)
+				result.push(asteroid);
+		}
+		result.display_reversed();
+	}
+
 int main() {
-	string str = "abbdccdc"; //a
-	cout << remove_duplicates(str);
+	
+
 	return 0;
 }
