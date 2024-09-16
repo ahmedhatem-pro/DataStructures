@@ -62,6 +62,16 @@ public:
 		push(cur);
 		}
 	}
+
+	void reverse() { // [1, 2, 3, 4]  [4, 3, 2, 1]
+		if(isEmpty())
+			return;
+		int cur = pop();
+
+		reverse();
+
+		insert_at_bottom(cur);
+	}
 };
 	string reverse_subwords(string line) {
 		string result;
@@ -169,7 +179,8 @@ int main() {
 	stck.push(3);
 	stck.push(2);
 	stck.push(1);
-	stck.insert_at_bottom(10);
+	stck.display();
+	stck.reverse();
 	stck.display();
 	return 0;
 }
