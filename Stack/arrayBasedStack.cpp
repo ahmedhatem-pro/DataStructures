@@ -173,14 +173,28 @@ public:
 		result.display_reversed();
 	}
 
+	int parenthles_score(string str) {
+		Stack stck(str.size());
+		stck.push(0);
+
+		for (char x : str) {
+			if (x == '(')
+				stck.push(0);
+			else {
+				int last = stck.pop();
+
+				if (last == 0)
+					last = 1;
+				else 
+					last *= 2;
+
+				int parent_par = stck.pop() + last;
+				stck.push(parent_par);
+			}
+		}
+		return stck.peek();
+	}
 int main() {
-	Stack stck (10);
-	stck.push(4);
-	stck.push(3);
-	stck.push(2);
-	stck.push(1);
-	stck.display();
-	stck.reverse();
-	stck.display();
+	cout << parenthles_score("(()(()))(()(()))");
 	return 0;
 }
