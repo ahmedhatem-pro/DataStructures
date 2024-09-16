@@ -1,21 +1,18 @@
-// I used too much help on this one I must re-do it again sometime alone
 #include <iostream>
 #include <cassert>
 using namespace std;
 
 struct StackElement {
-    int n;      // That's the replacement of arguments in funcitons (function's input)
-    int result { -1};   // That's like the result of the function   (function's output)
+    int n { };
+    int result {-1};
 
-    StackElement(int n = 1, int result = -1) :
+    StackElement (int n = 1, int result = -1) : 
         n(n), result(result) {
-    }
-    bool is_computed() {
-        return result >= 0;
-    }
+        }
+        bool is_computed() {
+            return result >= 0;
+        }
 };
-
-
 
 class Stack {
 private:
@@ -24,80 +21,74 @@ private:
     StackElement *array { };
 
 public:
-    Stack(int size) :
-			size(size), top(-1) {
-		array = new StackElement[size] { };
-	}
+    Stack (int size):
+        size(size), top(-1) {
+        array = new StackElement[size] { };
+        }
+    ~Stack () {
+        delete[] array;
+    }
 
-	~Stack() {
-		delete[] array;
-	}
+    int is_full() {
+        return top == size - 1;
+    }
 
-	void push(StackElement x) {
-		assert(!isFull());
-		array[++top] = x;
-	}
+    int is_empty() {
+        return top == -1;
+    }
+    void push(StackElement n) {
+        assert(!is_full());
+        array[++top] = n;
+    }
 
-	StackElement pop() {
-		assert(!isEmpty());
-		return array[top--];
-	}
+    StackElement pop() {
+        assert(!is_empty());
+        return array[top--];
+    }
 
-	StackElement peek() {
-		assert(!isEmpty());
-		return array[top];
-	}
-
-	int isFull() {
-		return top == size - 1;
-	}
-
-	int isEmpty() {
-		return top == -1;
-	}
-
+    StackElement peek() {
+        assert(!is_empty());
+        return array[top];
+    }
 };
 
-    int factorial(int x) {
-        if (x <= 1) {
-            return 1;
-        }
-        int subResult = factorial(x - 1);
-        return x * subResult;
-    }
+int factorial(int x) {
+    if(x <= 1)
+        return 1;
 
-    int factorial_stack(int x) {
-        if (x <= 1)
-            return 1;
+    return x * factorial(x - 1);
+}
 
-        Stack stck(x);
-        stck.push(StackElement(x));
-        StackElement cur(1);
-        
-        while (!stck.isEmpty()) {
-            cur = stck.peek();
+int stackFactorial(int x) {
+    if (x <= 1)
+        return 1;
+    
+    Stack st(x);
+    st.push(StackElement(x));
+    StackElement cur(1);
 
-            if (!cur.is_computed()) {
-                if (cur.n <= 1) {
-                    cur.result = 1;
-                    stck.pop();
-                    stck.push(cur);
-                    
-                }else
-                    stck.push(StackElement(cur.n - 1));
-            }
-            else {
-                cur = stck.pop();
-                if (!stck.isEmpty()) {
-                    StackElement parent = stck.pop();
-                    parent.result = parent.n * cur.result;
-                    stck.push(parent);
-                }
+    while (!st.is_empty()) {
+        cur = st.peek();
+
+        if (!cur.is_computed()){
+            if (cur.n <= 1) {
+                cur.result = 1;
+                st.pop();
+                st.push(cur);
+            } else
+                st.push(StackElement(cur.n - 1));
+        } else {
+            cur = st.pop();
+            if (!st.is_empty()){
+                StackElement parent = st.pop();
+                parent.result = parent.n * cur.result;
+                st.push(parent);
             }
         }
-        return cur.result;
     }
+    return cur.result;
+}
+
 int main() {
-    int x = 5;
-    cout << factorial(x);
+    cout << stackFactorial(5);
 }
