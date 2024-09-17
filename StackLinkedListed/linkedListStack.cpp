@@ -57,21 +57,27 @@ public:
 
 };
 
-string infix_to_postfix(string infix) {
+string infix_to_postfix(string infix) { // TODO: Revisit this function to handle more complicated cases and improve functionality. Take this case for example (-25+5log(11! *5^3^12))
     Stack operators;
     string postfix;
 
     for (char x : infix) {
-        if (x == '*' || x == '/')
+        if (x == '(') {
             operators.push(x);
-        else if (x == '+' || x == '-') {
-                if (operators.isEmpty())
-                    operators.push(x);
-                else {
-                    while (!operators.isEmpty())
-                        postfix += operators.pop();
-                    operators.push(x);
-                }
+        } else if (x == ')') {
+            while (!operators.isEmpty() && operators.peek() != '(')
+                postfix += operators.pop();
+            operators.pop();    // pop '('
+            } else if (x == '*' || x == '/')
+                operators.push(x);
+            else if (x == '+' || x == '-') {
+                    if (operators.isEmpty())
+                        operators.push(x);
+                    else {
+                        while (!operators.isEmpty() && operators.peek() != '(')
+                            postfix += operators.pop();
+                        operators.push(x);
+                    }
         }
         else
             postfix += x;
@@ -85,10 +91,10 @@ string infix_to_postfix(string infix) {
 }
 
 int main() {
-    string str = "1+3*5-8/2";
+    string str = "2+3-((5+2)*3)";
     cout << infix_to_postfix(str);
 }
-// Professor's code
+// *Professor's code*
 // int precedence(char op) {
 //     if (op == '+' || op == '-')
 //         return 1;
@@ -101,13 +107,19 @@ int main() {
 // 	Stack operators;
 // 	string postfix;
 
-// 	infix += '-';		// Whatever lowest priority: force stack got empty
-// 	operators.push('#');// Remove IsEmpty
+// 	infix += '-';			// Whatever lowest priority: force stack got empty
+// 	operators.push('#');	// Remove IsEmpty
 
 // 	for (int i = 0; i < (int) infix.size(); ++i) {
 // 		if (isdigit(infix[i]))
 // 			postfix += infix[i];
-// 		else {
+// 		else if (infix[i] == '(')
+// 			operators.push(infix[i]);
+// 		else if (infix[i] == ')') {
+// 			while (operators.peek() != '(')
+// 				postfix += operators.pop();
+// 			operators.pop();	// pop (
+// 		} else {
 // 			while (precedence(operators.peek()) >= precedence(infix[i]))
 // 				postfix += operators.pop();
 // 			operators.push(infix[i]);
