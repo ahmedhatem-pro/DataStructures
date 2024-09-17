@@ -194,7 +194,26 @@ public:
 		}
 		return stck.peek();
 	}
+
+	void next_greater_element(int arr[], int len) {
+		Stack indx(len);
+
+		for (int i = 0; i < len; i++){
+			while (!indx.isEmpty() && arr[indx.peek()] < arr[i])
+				arr[indx.pop()] = arr[i];
+			indx.push(i);
+		}
+
+		while (!indx.isEmpty())
+			arr[indx.pop()] = -1;
+
+		for (int i = 0; i < len; i++) {
+			cout << arr[i] << " ";
+		}
+	}
 int main() {
-	cout << parenthles_score("(()(()))(()(()))");
+	const int length = 6;
+	int arr[length] {30, 10, 5, 7, 15, 11};
+	next_greater_element(arr, length);
 	return 0;
 }
