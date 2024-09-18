@@ -56,6 +56,16 @@ public:
 	}
 
 };
+int precedence(char op) {
+    if (op == '+' || op == '-')
+        return 1;
+    if (op == '*' || op == '/')
+        return 2;
+    if (op == '^')
+        return 3;
+
+    return 0;
+}
 
 string infix_to_postfix(string infix) { // TODO: Revisit this function to handle more complicated cases and improve functionality. Take this case for example (-25+5log(11! *5^3^12))
     Stack operators;
@@ -68,16 +78,24 @@ string infix_to_postfix(string infix) { // TODO: Revisit this function to handle
             while (!operators.isEmpty() && operators.peek() != '(')
                 postfix += operators.pop();
             operators.pop();    // pop '('
-            } else if (x == '*' || x == '/')
+            } else if (precedence(x) == 3)
                 operators.push(x);
-            else if (x == '+' || x == '-') {
-                    if (operators.isEmpty())
+                else if (precedence(x) == 2) {
+                    if (operators.isEmpty() && operators.peek() != '^')
                         operators.push(x);
                     else {
-                        while (!operators.isEmpty() && operators.peek() != '(')
+                        while (!operators.isEmpty() && operators.peek() != '(' && precedence(operators.peek()) == 3)
                             postfix += operators.pop();
                         operators.push(x);
                     }
+                } else if (precedence(x) == 1) {
+                                if (operators.isEmpty())
+                                    operators.push(x);
+                                else {
+                                    while (!operators.isEmpty() && operators.peek() != '(')
+                                        postfix += operators.pop();
+                                    operators.push(x);
+                                }
         }
         else
             postfix += x;
@@ -91,7 +109,8 @@ string infix_to_postfix(string infix) { // TODO: Revisit this function to handle
 }
 
 int main() {
-    string str = "2+3-((5+2)*3)";
+    string str = "1+2^3^4*5-6";
+    // string str = "5+4^3^2-9";   //5432^^+9-
     cout << infix_to_postfix(str);
 }
 // *Professor's code*
