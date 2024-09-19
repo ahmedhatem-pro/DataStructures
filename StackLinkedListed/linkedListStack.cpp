@@ -241,9 +241,33 @@ string infixToPrefix(string infix) {
 	return prefix;
 }
 
+char sign(char a, char b) {
+	if (a == b)
+		return '+';		// ++ or --
+	return '-';			// +- or -+
+}
 
-int main() {
+string remove_brackets(string str) {
 
+	Stack stk(str.size());	
+	stk.push('+');
+
+	string res = "";
+	for (int i = 0; i < (int) str.size(); ++i) {
+		char c = str[i];
+		if (isdigit(c))
+			res += c;
+		else if (c == '+' || c == '-')
+			res += sign(stk.peek(), c);
+		else if (c == '(' && i) {
+			if (str[i - 1] != '(')
+				stk.push(sign(stk.peek(), str[i - 1]));
+			else
+				stk.push(stk.peek());
+		} else
+			stk.pop();
+	}
+	return res;
 }
 // *Professor's code*
 // int precedence(char op) {
