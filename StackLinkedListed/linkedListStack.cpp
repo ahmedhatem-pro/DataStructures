@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <cassert>
-
+#include <cctype>
 using namespace std;
 
 class Stack {
@@ -186,15 +186,64 @@ double evalaute_postfix(string postfix) {   //I need to figure out how can I mak
 		else {
 			double a = numbers.pop();
 			double b = numbers.pop();
-			// Careful: b, a NOT a, b: consider 8/2 ==> 82/  a = 2, b = 8
 			numbers.push(applyOp(b, a, postfix[i]));
 		}
 	}
 	return numbers.pop();
 }
+
+
+string reversed_infix_to_postfix(string infix) {
+	Stack operators;
+	string postfix;
+
+	for (int i = 0; i < (int) infix.size(); ++i) {
+		if (isdigit(infix[i]) || isalpha(infix[i]))
+			postfix += infix[i];
+		else if (infix[i] == '(')
+			operators.push(infix[i]);
+		else if (infix[i] == ')') {
+			while (operators.peek() != '(')
+				postfix += operators.pop();
+			operators.pop();	// pop (
+		} else {
+			while(!operators.isEmpty()) {
+				if (precedence(operators.peek()) > precedence(infix[i]) ||
+					precedence(operators.peek()) == precedence(infix[i]) && infix[i] == '^')
+					postfix += operators.pop();
+				else
+					break;
+			}
+
+			operators.push(infix[i]);
+		}
+	}
+	while(!operators.isEmpty())
+		postfix += operators.pop();
+
+	return postfix;
+}
+
+string infixToPrefix(string infix) {
+	string reversed_infix;
+	for (int i = (int) infix.size() - 1; i >= 0; --i) {
+		if (infix[i] == '(')
+			reversed_infix += ')';
+		else if (infix[i] == ')')
+			reversed_infix += '(';
+		else
+			reversed_infix += infix[i];
+	}
+	string reversed_postfix = reversed_infix_to_postfix(reversed_infix);
+	string prefix;
+	for (int i = (int) reversed_postfix.size() - 1; i >= 0; --i)
+		prefix += reversed_postfix[i];
+	return prefix;
+}
+
+
 int main() {
-    string str = "23452*-*93/6+*+";
-    cout << evalaute_postfix(str);
+
 }
 // *Professor's code*
 // int precedence(char op) {
