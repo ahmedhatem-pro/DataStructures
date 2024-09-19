@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include <cassert>
 
 using namespace std;
@@ -108,10 +109,92 @@ string infix_to_postfix(string infix) { // TODO: Revisit this function to handle
     return postfix;
 }
 
+char convertIntToChar(int asciiValue) {
+    return static_cast<char>(asciiValue);
+}
+
+double applyOp(double a, double b, char op) {
+
+    switch (op) {
+        case '+': return a + b;
+        case '-': return a - b;
+        case '*': return a * b;
+        case '/': return a / b;
+        case '^': return pow(a, b);
+    }
+    return 0;
+}
+
+double evaluate_infix(string infix) {   //I need to figure out how can I make the stack return double instead of int
+    double result { };
+    Stack values;
+    Stack op;
+
+    for (size_t i = 0; i < infix.length(); i++) {
+        if (isspace(infix[i]))
+            continue;
+        if (isdigit(infix[i])) {
+            double value = 0;
+            while (i < infix.length() && isdigit(infix[i])) {
+                value = (value * 10) + (infix[i] - '0');
+                i++;
+            }
+            values.push(value);
+            i--;
+        }else {
+            while (!op.isEmpty() && precedence(op.peek()) >= precedence(infix[i])) {
+                if (precedence(infix[op.peek() == 3])){
+                double val1 = values.pop();
+                double val2 = values.pop();
+                char ops = op.pop();
+                values.push(applyOp(val1, val2, ops));
+                values.display();
+                } else {
+                double val2 = values.pop();
+                double val1 = values.pop();
+                char ops = op.pop();
+                values.push(applyOp(val1, val2, ops));
+                }
+            }
+            op.push(infix[i]);
+            }
+        }
+            while (!op.isEmpty()) {
+                if (precedence(infix[op.peek() == 3])){
+                double val1 = values.pop();
+                double val2 = values.pop();
+                char ops = op.pop();
+                values.push(applyOp(val1, val2, ops));
+                values.display();
+                } else {
+                double val2 = values.pop();
+                double val1 = values.pop();
+                char ops = op.pop();
+                values.push(applyOp(val1, val2, ops));
+                }
+            }
+        result = values.pop();
+        return result;
+}
+
+double evalaute_postfix(string postfix) {   //I need to figure out how can I make the stack return double instead of int
+	Stack numbers;
+
+	for (int i = 0; i < (int) postfix.size(); ++i) {
+		if (isdigit(postfix[i]))
+			numbers.push(postfix[i] - '0');
+		else {
+			double a = numbers.pop();
+			double b = numbers.pop();
+			// Careful: b, a NOT a, b: consider 8/2 ==> 82/  a = 2, b = 8
+			numbers.push(applyOp(b, a, postfix[i]));
+		}
+	}
+	return numbers.pop();
+}
 int main() {
-    string str = "1+2^3^4*5-6";
-    // string str = "5+4^3^2-9";   //5432^^+9-
-    cout << infix_to_postfix(str);
+    string str = "23452*-*93/6+*+";
+    cout << evalaute_postfix(str);
 }
 // *Professor's code*
 // int precedence(char op) {
