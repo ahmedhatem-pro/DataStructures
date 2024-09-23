@@ -24,7 +24,13 @@ public:
 		if (pos == size)
 			pos = 0;
 		return pos;
-		//return (pos + 1) % size;	//  Or shorter way
+	}
+
+	int prev(int pos) {
+		--pos;
+		if (pos == 0)
+			pos = size - 1;
+		return pos;
 	}
 
 	void enqueue(int value) {
@@ -38,6 +44,23 @@ public:
 		assert(!isEmpty());
 		int value = array[front];
 		front = next(front);
+		--added_elements;
+		return value;
+	}
+
+	void enqueue_front(int value) {
+		assert(!isFull());
+		int prevFront = prev(front);
+		array[prevFront] = value;
+		front = prevFront
+		added_elements++;
+	}
+
+	int dequeue_rear() {
+		assert(!isEmpty());
+		int prevRear = prev(rear);
+		int value = array[rear];
+		rear = prev(rear);
 		--added_elements;
 		return value;
 	}
