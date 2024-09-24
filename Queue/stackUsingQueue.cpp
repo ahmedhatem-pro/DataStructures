@@ -48,23 +48,9 @@ public:
 		return value;
 	}
 
-	void enqueue_front(int value) {
-		assert(!isFull());
-		int prevFront = prev(front);
-		array[prevFront] = value;
-		front = prevFront
-		added_elements++;
-	}
-
-	int dequeue_rear() {
-		assert(!isEmpty());
-		int prevRear = prev(rear);
-		int value = array[rear];
-		rear = prev(rear);
-		--added_elements;
-		return value;
-	}
-
+    int front_value(){
+        return front;
+    }
 	void display() {
 		cout << "Front " << front << " - rear " << rear << "\t";
 		if (isFull())
@@ -89,6 +75,30 @@ public:
 	}
 };
 
-int main() {
-	
-}
+class Stack
+{
+private:
+    Queue q;
+    int added_elements { };
+
+    void insert_at_front(int value) {
+        int sz = added_elements;
+        q.enqueue(value);
+        while (sz--)
+            q.enqueue(q.dequeue());
+        ++added_elements;
+    }
+public:
+    void push(int value){
+        insert_at_front(value);
+    }
+
+    int pop() {
+        --added_elements;
+        return q.dequeue();
+    }
+
+    int peek() {
+        return q.front_value();
+    }
+};
