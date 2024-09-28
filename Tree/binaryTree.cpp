@@ -42,14 +42,28 @@ public:
 			}
 		}
 	}
+
+	int treeMax() {
+		int max = this->data;
+		if(left) {
+			if (left->treeMax() > max)
+				max = left->treeMax();
+		}
+		if(right) {
+			if (right->treeMax() > max)
+				max = right->treeMax();
+		}
+		return max;
+	}
 };
 
 int main() {
 	BinaryTree tree(1);
-	tree.add( { 2, 4, 7 }, { 'L', 'L', 'L' });
-	tree.add( { 2, 4, 8 }, { 'L', 'L', 'R' });
-	tree.add( { 2, 5, 9 }, { 'L', 'R', 'R' });
-	tree.add( { 3, 6, 10 }, { 'R', 'R', 'L' });
-	tree.print_inorder();
+	tree.add( { 36, 4, 7 }, {'L', 'L', 'L' });
+	tree.add( { 36, 4, 7,100 }, {'L', 'L', 'L', 'R'});
+	tree.add( { 36, 4, 16 }, {'L', 'L', 'R' });
+	tree.add( { 36, 5, 9 }, {'L', 'R', 'R' });
+	tree.add( { 3, 6, 10 }, {'R', 'R', 'L' });
+	cout << tree.treeMax();
 	return 0;
 }
