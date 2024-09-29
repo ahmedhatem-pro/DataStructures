@@ -64,6 +64,17 @@ public:
 			maxHeight = max(maxHeight, 1 + right->treeHeight());
 		return maxHeight;
 	}
+
+	int countNodes() {
+		int nodeCount = 1;
+		if (left) {
+			nodeCount+= left->countNodes();
+		}
+		if (right) {
+			nodeCount+=right->countNodes();
+		}
+		return nodeCount;
+	}
 };
 
 int main() {
@@ -73,6 +84,6 @@ int main() {
 	tree.add( { 36, 4, 16 }, { 'L', 'L', 'R' });
 	tree.add( { 36, 5, 9 }, { 'L', 'R', 'R' });
 	tree.add( { 3, 6, 10 }, { 'R', 'R', 'L' });
-	cout << tree.treeHeight();
+	cout << tree.countNodes();
 	return 0;
 }
