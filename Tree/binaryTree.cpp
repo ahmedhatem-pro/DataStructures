@@ -75,15 +75,26 @@ public:
 		}
 		return nodeCount;
 	}
+
+	int countLeaf() {
+		int leafCount = 0;
+		if (left) {
+			leafCount+= left->countLeaf();
+		}
+		if (right) {
+			leafCount+=right->countLeaf();
+		}
+		if (!right && !left)
+			return 1;
+		return leafCount;
+	}
 };
 
 int main() {
-	BinaryTree tree(1);
-	tree.add( { 36, 4, 7 }, { 'L', 'L', 'L' });
-	tree.add( { 36, 4, 7, 100 }, { 'L', 'L', 'L', 'R' });
-	tree.add( { 36, 4, 16 }, { 'L', 'L', 'R' });
-	tree.add( { 36, 5, 9 }, { 'L', 'R', 'R' });
-	tree.add( { 3, 6, 10 }, { 'R', 'R', 'L' });
-	cout << tree.countNodes();
+	BinaryTree tree(2);
+	tree.add( { 3 }, { 'L' });
+	tree.add( { 13,7  }, { 'R' ,'L' });
+	tree.add( { 13, 8 }, { 'R' ,'R' });
+	cout << tree.countLeaf();
 	return 0;
 }
