@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cassert>
+#include <cmath>
 #include <vector>
 using namespace std;
 
@@ -45,11 +46,11 @@ public:
 
 	int treeMax() {
 		int max = this->data;
-		if(left) {
+		if (left) {
 			if (left->treeMax() > max)
 				max = left->treeMax();
 		}
-		if(right) {
+		if (right) {
 			if (right->treeMax() > max)
 				max = right->treeMax();
 		}
@@ -58,7 +59,7 @@ public:
 
 	int treeHeight() {
 		int maxHeight = 0;
-		if(left)
+		if (left)
 			maxHeight = 1 + left->treeHeight();
 		if (right)
 			maxHeight = max(maxHeight, 1 + right->treeHeight());
@@ -67,12 +68,10 @@ public:
 
 	int countNodes() {
 		int nodeCount = 1;
-		if (left) {
+		if (left)
 			nodeCount+= left->countNodes();
-		}
-		if (right) {
+		if (right)
 			nodeCount+=right->countNodes();
-		}
 		return nodeCount;
 	}
 
@@ -88,13 +87,46 @@ public:
 			return 1;
 		return leafCount;
 	}
+
+	bool doesExist(int item) {
+		bool found = false;
+		if (data == item) {
+			found = true;
+			return found;
+		}
+		if (left && found == false)
+			found = left->doesExist(item);
+		if (right && found == false)
+			found = right->doesExist(item);
+		return found;
+	}
+
+	bool isPerfect(int h = - 1) {
+		if (h == -1)
+			h = treeHeight();
+
+		if (!left && !right)
+			return  h == 0;
+
+		if (!left && right || left && !right)
+			return false;
+
+		return left->isPerfect(h - 1) && right->isPerfect(h - 1);
+	}
+
+	bool isPerfectFormula() {
+		int totalHeight = treeHeight();
+		int totalNodes = countNodes();
+		return pow(2, totalHeight + 1) - 1 == totalNodes;
+	}
 };
 
 int main() {
 	BinaryTree tree(2);
-	tree.add( { 3 }, { 'L' });
-	tree.add( { 13,7  }, { 'R' ,'L' });
-	tree.add( { 13, 8 }, { 'R' ,'R' });
-	cout << tree.countLeaf();
+	tree.add( { 3, 14 }, { 'L', 'L' });
+	tree.add( { 3, 15 }, { 'L', 'R' });
+	tree.add( { 13, 19 }, { 'R','L'  });
+	tree.add( { 13 , 20}, { 'R', 'R' });
+	cout << tree.isPerfect();
 	return 0;
 }
