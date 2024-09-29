@@ -55,15 +55,24 @@ public:
 		}
 		return max;
 	}
+
+	int treeHeight() {
+		int maxHeight = 0;
+		if(left)
+			maxHeight = 1 + left->treeHeight();
+		if (right)
+			maxHeight = max(maxHeight, 1 + right->treeHeight());
+		return maxHeight;
+	}
 };
 
 int main() {
 	BinaryTree tree(1);
-	tree.add( { 36, 4, 7 }, {'L', 'L', 'L' });
-	tree.add( { 36, 4, 7,100 }, {'L', 'L', 'L', 'R'});
-	tree.add( { 36, 4, 16 }, {'L', 'L', 'R' });
-	tree.add( { 36, 5, 9 }, {'L', 'R', 'R' });
-	tree.add( { 3, 6, 10 }, {'R', 'R', 'L' });
-	cout << tree.treeMax();
+	tree.add( { 36, 4, 7 }, { 'L', 'L', 'L' });
+	tree.add( { 36, 4, 7, 100 }, { 'L', 'L', 'L', 'R' });
+	tree.add( { 36, 4, 16 }, { 'L', 'L', 'R' });
+	tree.add( { 36, 5, 9 }, { 'L', 'R', 'R' });
+	tree.add( { 3, 6, 10 }, { 'R', 'R', 'L' });
+	cout << tree.treeHeight();
 	return 0;
 }
