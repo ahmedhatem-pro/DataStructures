@@ -15,6 +15,22 @@ public:
 			data(data) {
 	}
 
+	~BinaryTree() {
+		clear();
+	}
+
+	void clear() {
+		// Don't try to call clear for children and also delete. this deletes twice!
+		if (left) {
+			delete left; // recursively delete
+			left = nullptr;	// good practice
+		}
+		if (right) {
+			delete right;
+			right = nullptr;
+		}
+	}
+
 	void print_inorder() {
 		if(left)
 			left->print_inorder();
@@ -119,6 +135,7 @@ public:
 		int totalNodes = countNodes();
 		return pow(2, totalHeight + 1) - 1 == totalNodes;
 	}
+
 };
 
 int main() {
