@@ -17,6 +17,25 @@ public:
 			data(data) {
 	}
 
+	explicit BinaryTree(string postfix) {
+		stack <BinaryTree*> tree;
+
+		for (int i = 0; i < static_cast<int>(postfix.size()); i++) {
+			BinaryTree* current = new BinaryTree (postfix[i]);
+
+			if (!isdigit(postfix[i])) {
+				current->right = tree.top();
+				tree.pop();
+				current->left = tree.top();
+				tree.pop();
+			}
+			tree.push(current);
+		}
+		BinaryTree* root = tree.top();
+		this->data = root->data;
+		this->left = root->left;
+		this->right = root->right;
+	}
 	~BinaryTree() {
 		clear();
 	}
@@ -106,6 +125,12 @@ public:
 		return leafCount;
 	}
 
+	bool isLeaf() {
+		if (left || right)
+			return false;
+		return true;
+	}
+
 	bool doesExist(int item) {
 		bool found = false;
 		if (data == item) {
@@ -159,15 +184,55 @@ public:
 		cout << "\n";
 	}
 
+	void traverse_left_boundary() {
+		cout << data << " ";
+		if (left)
+			left->traverse_left_boundary();
+		else if (right)
+			right->traverse_left_boundary();
+	}
 
+	pair<int , int> treeDiameter() { // return diameter and height
+		pair <int, int> result = make_pair(0, 0);
+
+		if (!left && !right)
+			return result;
+		pair<int, int> leftDiameter = make_pair(0, 0);
+		pair<int, int> rightDiameter = make_pair(0, 0);
+
+		if (left) {
+			leftDiameter = left->treeDiameter();
+			result.first += 1 + leftDiameter.second;
+		}
+		if (right) {
+			rightDiameter = right->treeDiameter();
+			result.first += 1 + rightDiameter.second;
+		}
+
+		result.first = max(result.first, max(leftDiameter.first, rightDiameter.first));
+
+		result.second = 1 + max(leftDiameter.second, rightDiameter.second);
+
+		return result;
+	}
+
+	void printInOrderExpression() {
+		if (left) {
+			if (!left->isLeaf())
+				cout << "(";
+			left->printInOrderExpression();
+			if (!left->isLeaf())
+				cout<< ")";
+		}
+
+		cout << data ;
+
+		if (right) {
+			if (!right->isLeaf())
+				cout << "(";
+			right->printInOrderExpression();
+			if (!right->isLeaf())
+				cout<< ")";
+		}
+	}
 };
-
-int main() {
-	BinaryTree tree(2);
-	tree.add( { 3, 14 }, { 'L', 'L' });
-	tree.add( { 3, 15 }, { 'L', 'R' });
-	tree.add( { 13, 19 }, { 'R','L'  });
-	tree.add( { 13 , 20}, { 'R', 'R' });
-	tree.printInOrderIterative();
-	return 0;
-}
