@@ -1,7 +1,9 @@
+#include <atomic>
 #include <iostream>
 #include <cassert>
 #include <cmath>
 #include <vector>
+#include <stack>
 using namespace std;
 
 class BinaryTree {
@@ -136,6 +138,28 @@ public:
 		return pow(2, totalHeight + 1) - 1 == totalNodes;
 	}
 
+	void printInOrderIterative() {
+		stack<pair<BinaryTree*, bool>> nodes;
+		nodes.push(make_pair(this, false));
+
+		while (!nodes.empty()) {
+			BinaryTree* current = nodes.top().first;
+			bool isComputed = nodes.top().second;
+			nodes.pop();
+			if (isComputed)
+				cout << current->data << " ";
+			else {
+				if (current->right)
+					nodes.push(make_pair(current->right, false));
+				nodes.push(make_pair(current, true));
+				if (current->left)
+					nodes.push(make_pair(current->left, false));
+			}
+		}
+		cout << "\n";
+	}
+
+
 };
 
 int main() {
@@ -144,6 +168,6 @@ int main() {
 	tree.add( { 3, 15 }, { 'L', 'R' });
 	tree.add( { 13, 19 }, { 'R','L'  });
 	tree.add( { 13 , 20}, { 'R', 'R' });
-	cout << tree.isPerfect();
+	tree.printInOrderIterative();
 	return 0;
 }
