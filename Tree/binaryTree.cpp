@@ -278,4 +278,65 @@ public:
 		}
 	}
 
+	void printNodesLevel(int level) {
+		if (level == 0)
+			cout << data << " ";
+		else if (level) {
+			left->printNodesLevel(level - 1);
+			right->printNodesLevel(level - 1);
+		}
+	}
+	void recursiveLevelOrderTraversal() {	// works only on perfect trees
+		int height = treeHeight();
+		for (int level = 0; level <= height; level++
+			)
+			printNodesLevel(level);
+	}
+
+	void levelOrderTraversalSpriral() {
+		deque<BinaryTree*> nodes;
+		nodes.push_back(this);
+
+		int level = 0;
+		bool forwardLevel = true;
+
+		while (!nodes.empty()) {
+			int sz = nodes.size();
+
+			cout << "Level " << level << ": ";
+			while (sz--) {
+				BinaryTree* current;
+
+				if (forwardLevel) {
+					current = nodes.front();
+					nodes.pop_front();
+					if (current->left)
+						nodes.push_back(current->left);
+					if (current->right)
+						nodes.push_back(current->right);
+				} else {
+					current = nodes.back();
+					nodes.pop_back();
+
+					if (current->right)
+						nodes.push_front(current->right);
+					if (current->left)
+						nodes.push_front(current->left);
+				}
+				cout << current->data << " ";
+			}
+		forwardLevel = !forwardLevel;
+		level++;
+		cout << "\n";
+		}
+	}
 };
+
+int main() {
+	BinaryTree tree(1);
+	tree.add( { 2, 4 }, { 'L', 'L' });
+	tree.add( { 2, 5 }, { 'L', 'R' });
+	tree.add( { 3, 6 }, { 'R', 'L' });
+	tree.add( { 3, 7 }, { 'R', 'R' });
+	tree.levelOrderTraversalSpriral();
+}
