@@ -293,7 +293,7 @@ public:
 			printNodesLevel(level);
 	}
 
-	void levelOrderTraversalSpriral() {
+	void levelOrderTraversalSpiral() {
 		deque<BinaryTree*> nodes;
 		nodes.push_back(this);
 
@@ -330,6 +330,36 @@ public:
 		cout << "\n";
 		}
 	}
+
+	bool isComplete() {
+		queue<BinaryTree*> nodes;
+		nodes.push(this);
+		bool noMoreAllowed = false;
+
+		while (!nodes.empty()) {
+			int sz = nodes.size();
+
+			while (sz--) {
+				BinaryTree* current = nodes.front();
+				nodes.pop();
+
+				if ( current->left) {
+					if (noMoreAllowed)
+						return false ;
+					nodes.push(current->left);
+				} else
+					noMoreAllowed = true;
+
+					if (current->right) {
+						if (noMoreAllowed)
+							return false;
+						nodes.push(current->right);
+					} else
+						noMoreAllowed = true;
+			}
+		}
+		return true;
+	}
 };
 
 int main() {
@@ -338,5 +368,5 @@ int main() {
 	tree.add( { 2, 5 }, { 'L', 'R' });
 	tree.add( { 3, 6 }, { 'R', 'L' });
 	tree.add( { 3, 7 }, { 'R', 'R' });
-	tree.levelOrderTraversalSpriral();
+	cout << tree.isComplete();
 }
