@@ -4,6 +4,7 @@
 #include <cmath>
 #include <vector>
 #include <stack>
+#include <queue>
 using namespace std;
 
 class BinaryTree {
@@ -235,4 +236,46 @@ public:
 				cout<< ")";
 		}
 	}
+
+	void levelOrderTraversal() {
+		queue<BinaryTree*> nodes;
+		nodes.push(this);
+
+		while (!nodes.empty()) {
+			BinaryTree* current = nodes.front();
+			nodes.pop();
+			cout << current->data << " ";
+
+			if (current->left)
+				nodes.push(current->left);
+			if (current->right)
+				nodes.push(current->right);
+		}
+		cout << "\n";
+	}
+
+	void levelOrderTraversal2() {
+		queue<BinaryTree*> nodes;
+		nodes.push(this);
+
+		int level = 0;
+		while (!nodes.empty()) {
+			int sz = nodes.size();
+
+			cout << "level " << level << ": ";
+			while (sz--){
+				BinaryTree* current = nodes.front();
+				nodes.pop();
+				cout << current->data << " ";
+
+				if (current->left)
+					nodes.push(current->left);
+				if (current->right)
+					nodes.push(current->right);
+			}
+		level++;
+		cout << "\n";
+		}
+	}
+
 };
