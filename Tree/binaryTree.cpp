@@ -41,6 +41,35 @@ public:
 		clear();
 	}
 
+	BinaryTree(deque<int> &preorder, deque<int> &inorder, int inorder_start = 0, int inorder_end = - 1) {
+		if (inorder_end == -1)
+			inorder_end = static_cast<int>(inorder.size()) - 1;
+		
+		data = preorder[0];
+		preorder.pop_front();
+
+		for (int split = inorder_start; split <= inorder_end; split++) {
+			if (inorder[split] == data) {
+				if (inorder_start < split) 
+					left = new BinaryTree(preorder, inorder, inorder_start, split - 1);
+				if (split < inorder_end)
+					right = new BinaryTree(preorder, inorder, split + 1, inorder_end);
+				break;
+			}
+		}
+	}
+
+	// queue pair of (value, is_leaf)
+	BinaryTree(queue<pair<int, int>> &preorder_queue) {
+		pair<int, int> p = preorder_queue.front();
+		preorder_queue.pop();
+		data = p.first;
+		if (!p.second) { 	// non-leaf
+			left = new BinaryTree(preorder_queue);
+			right = new BinaryTree(preorder_queue);
+		}
+	}
+
 	void clear() {
 		// Don't try to call clear for children and also delete. this deletes twice!
 		if (left) {
