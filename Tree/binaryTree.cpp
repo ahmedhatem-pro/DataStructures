@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <atomic>
 #include <iostream>
 #include <cassert>
@@ -302,8 +303,8 @@ public:
 				if (current->right)
 					nodes.push(current->right);
 			}
-		level++;
-		cout << "\n";
+			level++;
+			cout << "\n";
 		}
 	}
 
@@ -354,9 +355,9 @@ public:
 				}
 				cout << current->data << " ";
 			}
-		forwardLevel = !forwardLevel;
-		level++;
-		cout << "\n";
+			forwardLevel = !forwardLevel;
+			level++;
+			cout << "\n";
 		}
 	}
 
@@ -379,15 +380,130 @@ public:
 				} else
 					noMoreAllowed = true;
 
-					if (current->right) {
-						if (noMoreAllowed)
-							return false;
-						nodes.push(current->right);
-					} else
-						noMoreAllowed = true;
+				if (current->right) {
+					if (noMoreAllowed)
+						return false;
+					nodes.push(current->right);
+				} else
+					noMoreAllowed = true;
 			}
 		}
 		return true;
+	}
+
+	string parenthesizeCanonical() {
+		string repr =  "(" + to_string(data);
+
+		vector<string> v;
+
+		if (left)
+			v.push_back(left->parenthesizeCanonical());
+		else
+			v.push_back("()");
+		if(right)
+			v.push_back(right->parenthesizeCanonical());
+		else
+			v.push_back("()");
+		sort(v.begin(), v.end());
+		for(int i = 0;i < static_cast<int> (v.size()); i++)
+			repr += v[i];
+		repr+= ")";
+
+		return repr;
+	}
+
+	bool isMirror(BinaryTree* first, BinaryTree* second) { //O(n)
+		if (!first&& !second)
+			return true;
+
+		if (!first && second || first && !second || first->data != second->data)
+			return false;
+
+		return  isMirror(first->left, second->right) && isMirror(first->right, first->left);
+	}
+
+	bool isSymmetric2() {
+		return isMirror(left, right);
+	}
+
+	string parenthesize(bool leftFirst = true) {
+		string repr = "(" + to_string(data);
+
+		if (leftFirst) {
+			if (left)
+				repr += left->parenthesize(leftFirst);
+			else
+				repr += "()";
+
+			if (right)
+				repr += right->parenthesize(leftFirst);
+			else
+				repr += "()";
+		}else {
+			if (right)
+				repr +=  right->parenthesize(leftFirst);
+			else
+				repr += "()";
+			if(left)
+				repr += left->parenthesize(leftFirst);
+			else
+				repr += "()";
+		}
+		repr += ")";
+
+		return repr;
+	}
+
+	bool isSymmetric() {
+		if (!left && !right)
+			return true;
+		if (!left && right || left && !right)
+			return false;
+
+		return  left->parenthesize() == right->parenthesize(false);
+	}
+
+	bool isFlipEquiv(BinaryTree* other) {
+		return parenthesizeCanonical() == other->parenthesizeCanonical();
+	}
+
+	string parenthesize2 (vector<string>& allRepres) {
+		string repr = "(" + to_string(data);
+
+		if(left)
+			repr += left->parenthesize2(allRepres);
+		else
+			repr += "()";
+
+		if (right)
+			repr += right->parenthesize2(allRepres);
+		else
+			repr += "()";
+
+		repr += ")";
+		if(left || right)
+			allRepres.push_back(repr);
+		return repr;
+	}
+	/*	Save all subtrees
+		sort them
+		group them and print duplicates
+	 */
+	void printDuplicateSubtrees() {
+		vector<string> allRepes;
+		parenthesize2(allRepes);
+
+		sort(allRepes.begin(), allRepes.end());
+		allRepes.push_back("#");
+
+		for (int i = 0; i < (int) allRepes.size(); i++) {
+			int j = i + 1;
+			while (j < (int) allRepes.size() && allRepes[i] == allRepes[j])
+				j++;
+			if (j > i + 1)
+				cout << allRepes[i] << "\n";
+			i = j;
+		}
 	}
 };
 
@@ -397,5 +513,5 @@ int main() {
 	tree.add( { 2, 5 }, { 'L', 'R' });
 	tree.add( { 3, 6 }, { 'R', 'L' });
 	tree.add( { 3, 7 }, { 'R', 'R' });
-	cout << tree.isComplete();
+	cout << tree.parenthesizeCanonical();
 }
