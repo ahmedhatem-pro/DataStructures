@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
 class BinarySearchTree {
@@ -14,7 +15,7 @@ class BinarySearchTree {
             return this;
 
         if (target < data)
-             return left->searchNode(target);
+            return left->searchNode(target);
 
         return right->searchNode(target);
     }
@@ -23,6 +24,25 @@ class BinarySearchTree {
         if (subTree->left)
             return _minimum(subTree->left);
         return subTree;
+    }
+
+    void findParentsChain(vector<BinarySearchTree*> &parent, const int target) {
+        if (data == target)
+            return;
+        parent.push_back(this);
+        if (target < data && left)
+            left->findParentsChain(parent, target);
+        else if (right)
+            right->findParentsChain(parent, target);
+    }
+
+    BinarySearchTree* _successor(const int target) {
+        vector<BinarySearchTree*> parents;
+        findParentsChain(parents, target);
+        for (int i = static_cast<int>(parents.size()) - 1; i >= 0; i--) {
+            if (parents[i]->data > target)
+                return parents[i];
+        }
     }
 public:
     explicit BinarySearchTree(int const data) :
@@ -69,6 +89,13 @@ public:
         return _minimum(subTree);
     }
 
+    BinarySearchTree* successor(int target) {
+        BinarySearchTree* node = searchNode(target);
+        if (node->right)
+            return _minimum(node->right);
+        return _successor(target);
+    }
+
     friend  void printData(const BinarySearchTree* tree);
 };
 
@@ -90,7 +117,7 @@ int main() {
     tree.insert(15);
     tree.insert(60);
 
-    cout << "bye";
-
+    printData(tree.successor(45));
+    cout << "\nBye";
     return 0;
 }
