@@ -43,11 +43,18 @@ class BinarySearchTree {
             if (parents[i]->data > target)
                 return parents[i];
         }
+        return nullptr;
     }
 public:
     explicit BinarySearchTree(int const data) :
             data(data) {
     }
+
+    BinarySearchTree(int const data, BinarySearchTree* left, BinarySearchTree* right) :
+            data(data), left(left), right(right){
+    }
+
+    BinarySearchTree() = default;
 
     void print_inorder() {
         if (left)
@@ -89,15 +96,83 @@ public:
         return _minimum(subTree);
     }
 
-    BinarySearchTree* successor(int target) {
-        BinarySearchTree* node = searchNode(target);
-        if (node->right)
+    BinarySearchTree* successor(const int target) {
+        if (const BinarySearchTree* node = searchNode(target); node->right)
             return _minimum(node->right);
         return _successor(target);
     }
 
+    bool searchIterative(const int target) {
+        const BinarySearchTree* curr = this;
+        while (curr) {
+            if (data == target)
+                return true;
+            if (target == curr->data)
+                return true;
+            if (target < curr->data)
+                curr = curr->left;
+            else
+                curr = curr->right;
+        }
+        return false;
+    }
+
+    void getInorderVector(vector<int>& values) {
+        if (left)
+            left->getInorderVector(values);
+
+        values.push_back(data);
+
+        if (right)
+            right->getInorderVector(values);
+    }
+
+    bool isBST() {
+        vector<int> values;
+        getInorderVector(values);
+
+        for (int i = 1; i < static_cast<int> (values.size()); i++) {
+            if (values[i] <= values[i - 1])
+                return false;
+        }
+        return true;
+    }
+
+    int smallestKth(const int k, int count = 1) {
+        if (left) {
+            left->smallestKth(k, count);
+        }
+        if (count == k)
+            return data;
+        count++;
+        if (right)
+            right->smallestKth(k, count);
+
+        return -1234;
+    }
+
     friend  void printData(const BinarySearchTree* tree);
+
+    static BinarySearchTree* _buildBalancedBST(vector<int> &values, int start = 0, int end = -10) {
+        if (end == -10)
+            end = static_cast<int> (values.size())- 1;
+        if (start > end)
+            return nullptr;
+
+        int mid = (start + end) / 2;
+        BinarySearchTree *left = _buildBalancedBST(values, start, mid - 1);
+        BinarySearchTree *right = _buildBalancedBST(values, mid + 1, end);
+         // Memory leak here Hopefully it can be solved by implementing a destructor
+
+        return new BinarySearchTree(values[mid], left, right);
+    }
+
+    void buildBalancedBST(vector<int> &values) {
+        const BinarySearchTree* temp = _buildBalancedBST(values);
+        *this = *temp;
+    }
 };
+
 
 void printData(const BinarySearchTree* tree) {
     if (tree == nullptr)
@@ -105,7 +180,6 @@ void printData(const BinarySearchTree* tree) {
     else
         cout << tree->data;
 }
-
 
 int main() {
     BinarySearchTree tree(50);
@@ -116,8 +190,9 @@ int main() {
     tree.insert(35);
     tree.insert(15);
     tree.insert(60);
-
-    printData(tree.successor(45));
-    cout << "\nBye";
+    vector v = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    BinarySearchTree tree2;
+    tree2.buildBalancedBST(v);
+    tree2.print_inorder();
     return 0;
 }
