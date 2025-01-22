@@ -45,6 +45,21 @@ class BinarySearchTree {
         }
         return nullptr;
     }
+
+    bool _isBST2(int mn = INT_MIN, int mx = INT_MAX) {
+        bool status = mn < data && data < mx;
+
+        if (!status)
+            return false;
+
+        bool leftBST = !left || left->_isBST2(mn, data);
+        if (!leftBST)
+            return false;
+
+        bool rightBST = !right || right->_isBST2(data, mx);
+        return rightBST;
+
+    }
 public:
     explicit BinarySearchTree(int const data) :
             data(data) {
@@ -192,6 +207,17 @@ public:
         *this = *temp;
     }
 
+    int lowestCommonSuccessor(int x, int y) {
+        if (x > data && y < data)
+            return left->lowestCommonSuccessor(x, y);
+        if (x > data && y > data)
+            return right->lowestCommonSuccessor(x, y);
+        return data;
+    }
+
+    bool isBST2() {
+        return _isBST2();
+    }
     
     friend  void printData(const BinarySearchTree* tree);
 };
@@ -212,9 +238,6 @@ int main() {
     tree.insert(35);
     tree.insert(15);
     tree.insert(60);
-    vector v = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-    BinarySearchTree tree2;
-    tree2.buildBalancedBST(v);
-    tree2.print_inorder();
+    cout << tree.isBST2();
     return 0;
 }
