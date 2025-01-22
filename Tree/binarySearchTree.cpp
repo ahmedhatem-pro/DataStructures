@@ -56,6 +56,25 @@ public:
 
     BinarySearchTree() = default;
 
+    ~BinarySearchTree() {
+        clear(left);
+        clear(right);
+    }
+
+    void clear(BinarySearchTree *&root) {
+        if(!root)
+            return;
+        clear(root->left);
+        clear(root->right);
+        delete root;
+        root = nullptr;
+    }
+
+    void deleteNode(BinarySearchTree* node) {
+        delete node->left;
+        delete node->right;
+    }
+
     void print_inorder() {
         if (left)
             left->print_inorder();
@@ -138,20 +157,21 @@ public:
         return true;
     }
 
-    int smallestKth(const int k, int count = 1) {
+    int smallestKth(int &k) {
+        if (k == 0)
+            return -1234;
         if (left) {
-            left->smallestKth(k, count);
+            int res = left->smallestKth(k);
+            if (k == 0)
+                return res;
         }
-        if (count == k)
+        --k;
+        if (k == 0)
             return data;
-        count++;
         if (right)
-            right->smallestKth(k, count);
-
+            right->smallestKth(k);
         return -1234;
     }
-
-    friend  void printData(const BinarySearchTree* tree);
 
     static BinarySearchTree* _buildBalancedBST(vector<int> &values, int start = 0, int end = -10) {
         if (end == -10)
@@ -171,8 +191,10 @@ public:
         const BinarySearchTree* temp = _buildBalancedBST(values);
         *this = *temp;
     }
-};
 
+    
+    friend  void printData(const BinarySearchTree* tree);
+};
 
 void printData(const BinarySearchTree* tree) {
     if (tree == nullptr)
