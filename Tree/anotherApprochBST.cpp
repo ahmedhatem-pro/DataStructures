@@ -1,4 +1,6 @@
 #include <iostream>
+#include <deque>
+#include <vector>
 using namespace std;
 
 class BST {
@@ -66,6 +68,27 @@ public:
         if (parent)
             return parent->data;
         return -1234;
+    }
+
+    void successorQueries(deque<int>& q, vector<int> &answer, vector<int> &traversal) {
+        if (q.empty())
+            return;
+        if (left && q.front() < data) {
+            left->successorQueries(q, answer, traversal);
+            if (q.empty())
+                return;
+        }
+
+        if (!traversal.empty() && traversal.back() == q.front()) {
+            answer.push_back(data);
+            q.pop_front();
+            if (q.empty())
+                return;
+        }
+        traversal.push_back(data);
+
+        if (right && q.front() >= data)
+            right->successorQueries(q, answer, traversal);
     }
 };
 
