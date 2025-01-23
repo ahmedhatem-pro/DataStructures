@@ -90,18 +90,22 @@ public:
         if (right && q.front() >= data)
             right->successorQueries(q, answer, traversal);
     }
+
+    bool isDegenerate(const vector<int> &preorder) {
+        int min = 0, max = 1000;
+        for (int i = 1; i < static_cast<int>(preorder.size()); i++) {
+            if (preorder[i] < min || preorder[i] > max)
+                return false;
+            if (preorder[i] > preorder[i - 1])
+                min = preorder [i - 1] + 1;
+            else if (preorder[i] < preorder[i -1])
+                max = preorder[i - 1] - 1;
+        }
+        return true;
+    }
 };
 
 int main() {
-    BST tree(50);
-    tree.insert(20);
-    tree.insert(45);
-    tree.insert(70);
-    tree.insert(73);
-    tree.insert(35);
-    tree.insert(15);
-    tree.insert(60);
-    cout << tree.successor(45);
-
+    cout << "Bye";
     return 0;
 }
