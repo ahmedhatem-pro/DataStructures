@@ -13,6 +13,22 @@ public:
     explicit BST (const int data, BST *parent = nullptr) : data (data), parent(parent) {
     }
 
+    BST (deque<int> &preOrder, int start = 0, int end = -10) {
+        if (end == -10)
+        end = static_cast<int> (preOrder.size()) - 1;
+        data = preOrder[start];
+
+        for (int split = start + 1; split <= end + 1; split++){
+            if (split == end + 1 || preOrder[split] > data) {
+                if (start + 1 <= split - 1)
+                    left = new BST (preOrder, start + 1, split - 1);
+                if (split <= end)
+                    right = new BST (preOrder, split, end);
+                break;
+            }
+        }
+    }
+
     void print_inorder() {
         if (left)
             left->print_inorder();
@@ -106,6 +122,7 @@ public:
 };
 
 int main() {
-    cout << "Bye";
-    return 0;
+    deque<int> v {50, 20,15, 45, 35, 60, 70, 73};
+    BST tree (v);
+    tree.print_inorder();
 }
