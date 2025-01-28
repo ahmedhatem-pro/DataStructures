@@ -1,5 +1,6 @@
 #include <iostream>
 #include <deque>
+#include <queue>
 #include <stack>
 #include <vector>
 using namespace std;
@@ -72,14 +73,55 @@ public:
     //     }
     // }
 
-    BST (deque<int> &preOrder, int min = 0, int max = 1001) {
-        data = preOrder[0];
-        preOrder.pop_front();
+    // BST (deque<int> &preOrder, int min = 0, int max = 1001) {
+    //     data = preOrder[0];
+    //     preOrder.pop_front();
+    //
+    //     if (isBetween(preOrder, min, data))
+    //         left = new BST (preOrder, min, data);
+    //     if (isBetween(preOrder, data, max))
+    //         right = new BST (preOrder, data, max);
+    // }
 
-        if (isBetween(preOrder, min, data))
-            left = new BST (preOrder, min, data);
-        if (isBetween(preOrder, data, max))
-            right = new BST (preOrder, data, max);
+    BST (deque<int> levelOrder) {
+        if (levelOrder.empty())
+            return;
+
+        data = levelOrder[0];
+        levelOrder.pop_front();
+
+        queue<pair<BST*, pair<int, int>>> nodesQueue;
+        nodesQueue.push(range(this, 0, 1001));
+
+        while (!nodesQueue.empty()) {
+            int sz = nodesQueue.size();
+
+            while (sz--) {
+                BST *curr = nodesQueue.front().first;
+                int min = nodesQueue.front().second.first;
+                int max = nodesQueue.front().second.second;
+                nodesQueue.pop();
+
+                if (isBetween(levelOrder, min, curr->data)) {
+                    int newData = levelOrder[0];
+                    levelOrder.pop_front();
+                    curr->left = new BST (newData);
+                    nodesQueue.push(range(curr->left, min, data));
+                }
+
+                if (isBetween(levelOrder, curr->data, max)) {
+                    int newData = levelOrder[0];
+                    levelOrder.pop_front();
+                    curr->right = new BST (newData);
+                    nodesQueue.push(range(curr->right, data, max));
+                }
+            }
+        }
+    }
+
+    pair<BST*, pair<int, int>> range(BST* node, int min, int max) {
+        pair<int , int> range = make_pair(min, max);
+        return make_pair(node, range);
     }
 
     bool isBetween(deque<int> &preOrder, int min, int max) {
@@ -181,7 +223,7 @@ public:
 };
 
 int main() {
-    deque<int> v {50, 20,15, 45, 35, 60, 70, 73};
+    deque<int> v {50, 20, 60, 15, 45, 70, 35, 73};
     BST tree (v);
     tree.print_inorder();
 }
