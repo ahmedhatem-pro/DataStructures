@@ -1,7 +1,31 @@
 #include <iostream>
 #include <deque>
+#include <stack>
 #include <vector>
 using namespace std;
+
+
+vector<int> nextGreaterIndex(deque<int> v) {
+    stack<int> pos;
+    vector<int> ans(static_cast<int>(v.size()));
+
+    for (int i = 0; i < static_cast<int>(v.size()); i++) {
+        while (!pos.empty() && v[i] > v[pos.top()]) {
+            v[pos.top()] = i;
+            pos.pop();
+        }
+        pos.push(i);
+    }
+
+    while (!pos.empty()) {
+        v[pos.top()] = v.size();
+        pos.pop();
+    }
+
+    for (int i = 0; i < static_cast<int>(v.size()); i++)
+        ans[i] = v[i];
+    return ans;
+}
 
 class BST {
     int data {};
@@ -13,20 +37,55 @@ public:
     explicit BST (const int data, BST *parent = nullptr) : data (data), parent(parent) {
     }
 
-    BST (deque<int> &preOrder, int start = 0, int end = -10) {
-        if (end == -10)
-        end = static_cast<int> (preOrder.size()) - 1;
-        data = preOrder[start];
+    // BST(deque<int> &preOrder, const vector<int> &nextGreater, int start = 0, int end = -10) {
+    //     if (end == -10)
+    //         end = static_cast<int> (preOrder.size()) - 1;
+    //
+    //     data = preOrder[start];
+    //
+    //     int split = nextGreater[start];
+    //
+    //     if (split > end)
+    //         split = end + 1;
+    //
+    //     if (start + 1 <= split - 1)
+    //         left = new BST (preOrder, nextGreater, start + 1, split - 1);
+    //     if (split <= end)
+    //         right = new BST (preOrder, nextGreater, split, end);
+    // }
+    // BST (deque<int> &preOrder) : BST (preOrder, nextGreaterIndex(preOrder)) {
+    // }
+    //
+    // BST (deque<int> &preOrder, int start = 0, int end = -10) { O(n^2)
+    //     if (end == -10)
+    //     end = static_cast<int> (preOrder.size()) - 1;
+    //     data = preOrder[start];
+    //
+    //     for (int split = start + 1; split <= end + 1; split++){
+    //         if (split == end + 1 || preOrder[split] > data) {
+    //             if (start + 1 <= split - 1)
+    //                 left = new BST (preOrder, start + 1, split - 1);
+    //             if (split <= end)
+    //                 right = new BST (preOrder, split, end);
+    //             break;
+    //         }
+    //     }
+    // }
 
-        for (int split = start + 1; split <= end + 1; split++){
-            if (split == end + 1 || preOrder[split] > data) {
-                if (start + 1 <= split - 1)
-                    left = new BST (preOrder, start + 1, split - 1);
-                if (split <= end)
-                    right = new BST (preOrder, split, end);
-                break;
-            }
-        }
+    BST (deque<int> &preOrder, int min = 0, int max = 1001) {
+        data = preOrder[0];
+        preOrder.pop_front();
+
+        if (isBetween(preOrder, min, data))
+            left = new BST (preOrder, min, data);
+        if (isBetween(preOrder, data, max))
+            right = new BST (preOrder, data, max);
+    }
+
+    bool isBetween(deque<int> &preOrder, int min, int max) {
+        if (preOrder.empty())
+            return false;
+        return min < preOrder[0] && preOrder[0] < max;
     }
 
     void print_inorder() {
