@@ -60,6 +60,42 @@ class BinarySearchTree {
         return rightBST;
 
     }
+
+    BinarySearchTree* minNode() {
+        BinarySearchTree* cur = this;
+        while (cur && cur->left)
+            cur = cur->left;
+        return cur;
+    }
+
+    BinarySearchTree* _deleteNode(int target, BinarySearchTree* node) {
+        if (!node)
+            return nullptr;
+
+        if (target < node->data)
+            node->left = _deleteNode(target, node->left);
+        else if (target > node->data)
+            node->right = _deleteNode(target, node->right);
+        else {
+            BinarySearchTree* tmp = node;
+
+            if (!node->left && !node->right)
+                node = nullptr;
+            else if (!node->right)
+                node = node->left;
+            else if (!node->left)
+                node = node->right;
+            else {
+                BinarySearchTree* mn = node->right->minNode();
+                node->data = mn->data;
+                node->right = _deleteNode(node->data, node->right);
+                tmp = nullptr;
+            }
+            if (tmp)
+                delete tmp;
+        }
+        return node;
+    }
 public:
     explicit BinarySearchTree(int const data) :
             data(data) {
@@ -90,6 +126,11 @@ public:
         delete node->right;
     }
 
+    void deleteValue(int target) {
+        if (target == data && !left && !right)
+            return; // root
+        _deleteNode(target, this);
+    }
     void print_inorder() {
         if (left)
             left->print_inorder();
